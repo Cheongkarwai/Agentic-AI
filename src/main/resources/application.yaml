@@ -8,7 +8,7 @@ langchain4j:
   open-ai:
     chat-model:
       api-key: ${OPENAI_API_KEY}
-      base-url: ${OPENAI_API_BASE_URL}
+      base-url: ${OPENAI_BASE_URL}
       model-name: gpt-4o
       log-requests: true
       log-responses: true

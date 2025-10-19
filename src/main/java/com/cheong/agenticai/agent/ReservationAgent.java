@@ -13,8 +13,11 @@ public interface ReservationAgent {
             If the parking slot failed to reserve, explain the reason clearly.
             """)
     @UserMessage("""
-            Reserve for slot number: {{slotNo}}
+            Reserve for slot {{slotNo}} for userId {{userId}} from startDateTime {{startDateTime}} until endDateTime {{endDateTime}}
             """)
     @Agent("An agent that reserve for parking slots")
-    boolean reserveSlot(@V("slotNo") String slotNo);
+    String reserveSlot(@V("slotNo") String slotNo,
+                       @V("startDateTime") String startDateTime,
+                       @V("endDateTime") String endDateTime,
+                       @V("userId") String userId);
 }

@@ -1,24 +1,49 @@
 package com.cheong.agenticai.service;
 
 import com.cheong.agenticai.agent.AvailabilityAgent;
-import com.cheong.agenticai.agent.PaymentAgent;
 import com.cheong.agenticai.agent.ReservationAgent;
+import com.cheong.agenticai.dto.BookingRequest;
 import dev.langchain4j.agentic.AgenticServices;
-import dev.langchain4j.agentic.UntypedAgent;
+import dev.langchain4j.agentic.supervisor.SupervisorAgent;
+import dev.langchain4j.agentic.supervisor.SupervisorResponseStrategy;
+import dev.langchain4j.model.chat.ChatModel;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Service
 public class BookingService {
 
-    private UntypedAgent untypedAgent;
+    private final SupervisorAgent supervisorAgent;
 
     public BookingService(AvailabilityAgent availabilityAgent,
                           ReservationAgent reservationAgent,
-                          PaymentAgent paymentAgent) {
-        this.untypedAgent = AgenticServices.sequenceBuilder()
-                .subAgents(availabilityAgent, reservationAgent, paymentAgent)
+                          ChatModel chatModel) {
+        this.supervisorAgent = AgenticServices
+                .supervisorBuilder()
+                .chatModel(chatModel)
+                .subAgents(availabilityAgent, reservationAgent)
+                .responseStrategy(SupervisorResponseStrategy.SUMMARY)
+//                .errorHandler(errorContext -> {
+//                    return ErrorRecoveryResult.result(errorContext.exception().getMessage());
+//                })
                 .build();
+    }
 
+    public Mono<String> bookSlot(BookingRequest bookingRequest){
 
+        String prompt = String.format(
+                "User %s wants to book a parking slot." +
+                "Check availability for slot %s from %s to %s. " +
+                "IMPORTANT: Only if the slot is available, proceed to reserve it. " +
+                "If the slot is NOT available, stop immediately and report that the slot is unavailable. " +
+                "Do not attempt to reserve an unavailable slot.",
+                bookingRequest.getUserId(),
+                bookingRequest.getSlotNo(),
+                bookingRequest.getStartDateTime(),
+                bookingRequest.getEndDateTime());
+
+        return Mono.fromCallable(()-> supervisorAgent.invoke(prompt))
+                .subscribeOn(Schedulers.boundedElastic());
     }
 }
