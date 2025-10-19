@@ -1,28 +1,25 @@
 package com.cheong.agenticai.tool;
 
 import com.cheong.agenticai.model.BookingSlot;
-import com.cheong.agenticai.model.ParkingSlot;
 import com.cheong.agenticai.repository.BookingSlotRepository;
 import com.cheong.agenticai.repository.ParkingSlotRepository;
 import dev.langchain4j.agent.tool.P;
 import dev.langchain4j.agent.tool.Tool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.List;
 
 @Slf4j
 @Component
-public class ParkingSlotReservationTool {
+public class AvailabilityTool {
 
     private final ParkingSlotRepository parkingSlotRepository;
     private final BookingSlotRepository bookingSlotRepository;
 
-    public ParkingSlotReservationTool(
+    public AvailabilityTool(
             ParkingSlotRepository parkingSlotRepository,
             BookingSlotRepository bookingSlotRepository) {
         this.parkingSlotRepository = parkingSlotRepository;
@@ -46,8 +43,8 @@ public class ParkingSlotReservationTool {
             Integer totalBookingSlotCount = parkingSlotRepository.findBySlotNoEquals(slotNo)
                     .doOnNext(parkingSlot -> log.info("Parking slot found for slotNo {}", slotNo))
                     .flatMap(parkingSlot -> {
-                        return bookingSlotRepository.countBookingSlotByParkingSlotIdEqualsAndStatusInAndStartDateTimeIsGreaterThanEqualAndEndDateTimeIsLessThanEqual
-                                        (slotNo, statuses, startDateTimeLocal, endDateTimeLocal)
+                        return bookingSlotRepository.countBookingSlotByParkingSlotIdEqualsAndStatusInAndStartDateTimeIsLessThanAndEndDateTimeIsGreaterThan
+                                        (slotNo, statuses, endDateTimeLocal, startDateTimeLocal)
                                 .doOnNext(count -> log.info("Total booking slot count for slotNo {} is {}", slotNo, count));
                     })
                     .defaultIfEmpty(0)

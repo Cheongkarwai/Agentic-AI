@@ -1,8 +1,10 @@
 package com.cheong.agenticai.config;
 
 import com.cheong.agenticai.agent.AvailabilityAgent;
+import com.cheong.agenticai.agent.PaymentAgent;
 import com.cheong.agenticai.agent.ReservationAgent;
-import com.cheong.agenticai.tool.ParkingSlotReservationTool;
+import com.cheong.agenticai.tool.AvailabilityTool;
+import com.cheong.agenticai.tool.PaymentTool;
 import com.cheong.agenticai.tool.ReservationTool;
 import dev.langchain4j.agentic.AgenticServices;
 import dev.langchain4j.model.chat.ChatModel;
@@ -23,7 +25,7 @@ public class AgentConfig {
 
     @Bean
     public AvailabilityAgent availabilityAgent(ChatModel chatModel,
-                                               ParkingSlotReservationTool parkingSlotAvailabilityTool){
+                                               AvailabilityTool parkingSlotAvailabilityTool){
         return AgenticServices.agentBuilder(AvailabilityAgent.class)
                 .chatModel(chatModel)
                 .tools(parkingSlotAvailabilityTool)
@@ -31,5 +33,13 @@ public class AgentConfig {
                 .build();
     }
 
-
+    @Bean
+    public PaymentAgent paymentAgent(ChatModel chatModel,
+                                     PaymentTool paymentTool){
+        return AgenticServices.agentBuilder(PaymentAgent.class)
+                .chatModel(chatModel)
+                .tools(paymentTool)
+                .outputName("paymentAgent")
+                .build();
+    }
 }

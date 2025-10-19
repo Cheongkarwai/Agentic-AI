@@ -11,22 +11,21 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 @Component
 @Slf4j
 public class ReservationTool {
 
-    private final ParkingSlotReservationTool parkingSlotReservationTool;
+    private final AvailabilityTool availabilityTool;
 
     private final ParkingSlotRepository parkingSlotRepository;
 
     private final BookingSlotRepository bookingSlotRepository;
 
-    public ReservationTool(ParkingSlotReservationTool parkingSlotReservationTool,
+    public ReservationTool(AvailabilityTool availabilityTool,
                            ParkingSlotRepository parkingSlotRepository,
                            BookingSlotRepository bookingSlotRepository){
-        this.parkingSlotReservationTool = parkingSlotReservationTool;
+        this.availabilityTool = availabilityTool;
         this.parkingSlotRepository = parkingSlotRepository;
         this.bookingSlotRepository = bookingSlotRepository;
     }
@@ -42,7 +41,7 @@ public class ReservationTool {
 
         log.info("Attempting to reserve slot {}", slotNo);
 
-        String availabilityCheck = parkingSlotReservationTool.checkAvailability(slotNo, startDateTime, endDateTime);
+        String availabilityCheck = availabilityTool.checkAvailability(slotNo, startDateTime, endDateTime);
 
         if (!"AVAILABLE".equals(availabilityCheck)) {
             String message = "RESERVATION_BLOCKED - Cannot reserve slot because: " + availabilityCheck;

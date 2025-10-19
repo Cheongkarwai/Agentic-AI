@@ -14,8 +14,8 @@ public interface PaymentAgent {
             If the payment fails, explain the reason clearly.
             """)
     @UserMessage("""
-            Process payment for slot number: {{slotNo}}
+            Process payment for slot number: {{slotNo}} once reserved
             """)
     @Agent("An agent that processes payments for reserved parking slots")
-    PaymentResult makePayment(@V("slotNo") String slotNo);
+    String initiatePayment(@V("slotNo") String slotNo);
 }

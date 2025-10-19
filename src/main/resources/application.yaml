@@ -12,3 +12,6 @@ langchain4j:
       model-name: gpt-4o
       log-requests: true
       log-responses: true
+
+server:
+  port: 8081

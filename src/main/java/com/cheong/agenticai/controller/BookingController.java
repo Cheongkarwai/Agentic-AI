@@ -2,6 +2,7 @@ package com.cheong.agenticai.controller;
 
 import com.cheong.agenticai.dto.BookingRequest;
 import com.cheong.agenticai.service.BookingService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,7 @@ public class BookingController {
     }
 
     @PostMapping("/booking")
-    public Mono<String> bookSlot(@RequestBody BookingRequest bookingRequest){
+    public Mono<String> bookSlot(@Validated @RequestBody BookingRequest bookingRequest){
         return bookingService.bookSlot(bookingRequest);
     }
 }
