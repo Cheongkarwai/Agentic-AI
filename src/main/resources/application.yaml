@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: agentic-ai
+  r2dbc:
+    username: postgres
+    url: r2dbc:postgresql://localhost:5432/booking
+langchain4j:
+  open-ai:
+    chat-model:
+      api-key: ${OPENAI_API_KEY}
+      base-url: ${OPENAI_API_BASE_URL}
+      model-name: gpt-4o
+      log-requests: true
+      log-responses: true
