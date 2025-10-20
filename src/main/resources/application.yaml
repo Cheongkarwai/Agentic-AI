@@ -27,4 +27,7 @@ cache:
     prefix: parking-slot
   booking-slot:
     prefix: booking-slot
+booking:
+  auto-extend:
+    threshold-minutes: 15
 

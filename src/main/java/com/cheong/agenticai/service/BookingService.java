@@ -12,6 +12,7 @@ import dev.langchain4j.agentic.supervisor.SupervisorResponseStrategy;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.service.V;
 import org.reactivestreams.Publisher;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -24,6 +25,9 @@ public class BookingService {
 
     private final SupervisorAgent supervisorAgent;
     private final BookingSlotService bookingSlotService;
+
+    @Value("${booking.auto-extend.threshold-minutes}")
+    private int autoExtendThresholdMinutes;
 
     public BookingService(AvailabilityAgent availabilityAgent,
                           ReservationAgent reservationAgent,
@@ -75,6 +79,6 @@ public class BookingService {
     private boolean shouldAutoExtend(BookingSlot booking) {
         LocalDateTime now = LocalDateTime.now();
         Duration timeRemaining = Duration.between(now, booking.getEndDateTime());
-        return timeRemaining.toMinutes() < 15;
+        return timeRemaining.toMinutes() < autoExtendThresholdMinutes;
     }
 }
