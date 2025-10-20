@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MinuteRange {
 
-    int value() default 15;
+    int value() default 2;
     String message() default "You cannot book slots if the start time is less than 15 minutes from now";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

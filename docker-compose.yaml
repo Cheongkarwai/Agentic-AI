@@ -7,5 +7,5 @@ services:
     volumes:
       - ./data:/data
     environment:
-      - REDIS_ARGS=--requirepass test --appendonly yes
+      - REDIS_ARGS=--requirepass test --appendonly yes --notify-keyspace-events KEA
     restart: always

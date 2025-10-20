@@ -39,6 +39,6 @@ public class BookingSlot implements BaseEntity {
     private Status status;
 
     public enum Status {
-        PENDING, CONFIRMED, CANCELLED;
+        PENDING, CONFIRMED, CANCELLED, COMPLETED;
     }
 }
