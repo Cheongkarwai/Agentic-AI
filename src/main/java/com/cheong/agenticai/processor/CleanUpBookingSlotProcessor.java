@@ -1,4 +1,4 @@
-package com.cheong.agenticai.config;
+package com.cheong.agenticai.processor;
 
 import com.cheong.agenticai.service.BookingSlotService;
 import org.springframework.stereotype.Component;

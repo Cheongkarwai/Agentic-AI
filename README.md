@@ -13,6 +13,7 @@ This project implements an agentic AI system for parking slot reservations, util
 - **Spring WebFlux** - Reactive web framework
 - **Spring Data R2DBC** - Reactive database access
 - **PostgreSQL** - Database
+- **Redis** - Caching layer for parking slots and bookings
 - **LangChain4j 1.4.0** - AI agent framework
 - **OpenAI GPT-4** - Language model
 - **Lombok** - Code generation
@@ -28,11 +29,17 @@ This project implements an agentic AI system for parking slot reservations, util
   - **PaymentAgent** - Processes payments
 - RESTful API for booking management
 - Validation for booking requests
+- Redis caching for improved performance:
+  - Parking slot availability caching
+  - Booking slot caching with TTL
+- Redis key expiration listener for automatic booking cleanup
+- Background processors for expired booking management
 
 ## Prerequisites
 
 - Java 21 or higher
 - PostgreSQL database
+- Redis server
 - OpenAI API key
 - Maven
 
@@ -43,22 +50,20 @@ Set the following environment variables:
 ```bash
 export OPENAI_API_KEY=your_openai_api_key
 export OPENAI_BASE_URL=your_openai_base_url
+export DATASOURCE_USERNAME=postgres
+export DATASOURCE_URL=r2dbc:postgresql://localhost:5432/booking
+export REDIS_HOST=localhost
+export REDIS_PORT=6379
+export REDIS_PASSWORD=your_redis_password
 ```
 
-Update `src/main/resources/application.yaml` with your database credentials:
-
-```yaml
-spring:
-  r2dbc:
-    username: postgres
-    url: r2dbc:postgresql://localhost:5432/booking
-```
+The application uses environment variables for configuration. See `src/main/resources/application.yaml` for all available configuration options including cache prefixes and logging levels.
 
 ## Installation
 
 1. Clone the repository
-2. Set environment variables for OpenAI
-3. Configure database connection in `application.yaml`
+2. Set all required environment variables (see Configuration section)
+3. Start PostgreSQL and Redis servers
 4. Run the application:
 
 ```bash
@@ -87,12 +92,13 @@ Request body:
 ```
 src/main/java/com/cheong/agenticai/
 ├── agent/              # AI agents
-├── config/             # Configuration classes
+├── config/             # Configuration classes (Redis, listeners)
 ├── controller/         # REST controllers
 ├── dto/                # Data transfer objects
 ├── model/              # Domain models
+├── processor/          # Background processors (booking cleanup)
 ├── repository/         # Data repositories
-├── service/            # Business logic
+├── service/            # Business logic and cache services
 ├── tool/               # Agent tools
 └── validator/          # Custom validators
 ```

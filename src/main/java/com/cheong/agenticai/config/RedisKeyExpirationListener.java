@@ -1,5 +1,6 @@
 package com.cheong.agenticai.config;
 
+import com.cheong.agenticai.processor.ProcessorFactory;
 import jakarta.annotation.PostConstruct;
 import org.springframework.data.redis.connection.ReactiveSubscription;
 import org.springframework.data.redis.listener.PatternTopic;
