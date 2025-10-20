@@ -1,16 +1,14 @@
 package com.cheong.agenticai.controller;
 
+import com.cheong.agenticai.dto.BookingExtensionRequest;
 import com.cheong.agenticai.dto.BookingRequest;
 import com.cheong.agenticai.service.BookingService;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/booking")
 public class BookingController {
 
     private final BookingService bookingService;
@@ -19,8 +17,15 @@ public class BookingController {
         this.bookingService = bookingService;
     }
 
-    @PostMapping("/booking")
-    public Mono<String> bookSlot(@Validated @RequestBody BookingRequest bookingRequest){
+    @PostMapping
+    public Mono<String> bookSlot(@Validated @RequestBody BookingRequest bookingRequest) {
         return bookingService.bookSlot(bookingRequest);
+    }
+
+    @PostMapping("/{bookingId}/extend")
+    public Mono<Void> extendBooking(
+            @PathVariable String bookingId,
+            @RequestBody BookingExtensionRequest request) {
+        return bookingService.extendBooking(bookingId, request.getAdditionalMinutes());
     }
 }

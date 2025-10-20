@@ -87,6 +87,17 @@ Request body:
 }
 ```
 
+### Extend a Booking
+
+**POST** `/api/v1/booking/{bookingId}/extend`
+
+Request body:
+```json
+{
+  "additionalMinutes": 30
+}
+```
+
 ## Project Structure
 
 ```

@@ -3,6 +3,7 @@ package com.cheong.agenticai.service;
 import com.cheong.agenticai.dto.BookingSlotDTO;
 import com.cheong.agenticai.model.BookingSlot;
 import com.cheong.agenticai.repository.BookingSlotRepository;
+import io.r2dbc.spi.Result;
 import org.reactivestreams.Publisher;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -49,5 +50,9 @@ public class BookingSlotService {
                             return bookingSlot;
                         })
                         .flatMap(bookingSlotRepository::save));
+    }
+
+    public Mono<BookingSlot> findBookedSlotById(String bookingId) {
+        return bookingSlotCacheService.get(bookingId);
     }
 }

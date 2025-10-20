@@ -17,16 +17,19 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 
 @Service
 public class BookingService {
 
     private final SupervisorAgent supervisorAgent;
+    private final BookingSlotService bookingSlotService;
 
     public BookingService(AvailabilityAgent availabilityAgent,
                           ReservationAgent reservationAgent,
                           PaymentAgent paymentAgent,
-                          ChatModel chatModel) {
+                          ChatModel chatModel,
+                          BookingSlotService bookingSlotService) {
         this.supervisorAgent = AgenticServices
                 .supervisorBuilder()
                 .chatModel(chatModel)
@@ -36,6 +39,7 @@ public class BookingService {
 //                    return ErrorRecoveryResult.result(errorContext.exception().getMessage());
 //                })
                 .build();
+        this.bookingSlotService = bookingSlotService;
     }
 
     public Mono<String> bookSlot(BookingRequest bookingRequest) {
@@ -57,4 +61,20 @@ public class BookingService {
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
+    public Mono<Void> extendBooking(String bookingId, int additionalMinutes) {
+        return bookingSlotService.findBookedSlotById(bookingId)
+                .switchIfEmpty(Mono.defer(()->Mono.error(new RuntimeException("Booking slot not found"))))
+                .filter(this::shouldAutoExtend)
+                .flatMap(bookingSlot -> {
+                    bookingSlot.setEndDateTime(bookingSlot.getEndDateTime().plusMinutes(additionalMinutes));
+                    return bookingSlotService.save(bookingSlot);
+                })
+                .then();
+    }
+
+    private boolean shouldAutoExtend(BookingSlot booking) {
+        LocalDateTime now = LocalDateTime.now();
+        Duration timeRemaining = Duration.between(now, booking.getEndDateTime());
+        return timeRemaining.toMinutes() < 15;
+    }
 }
