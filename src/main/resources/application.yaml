@@ -4,6 +4,11 @@ spring:
   r2dbc:
     username: postgres
     url: r2dbc:postgresql://localhost:5432/booking
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: test
 langchain4j:
   open-ai:
     chat-model:
@@ -12,6 +17,14 @@ langchain4j:
       model-name: gpt-4o
       log-requests: true
       log-responses: true
-
+logging.level:
+          web: DEBUG
+          redis: DEBUG
 server:
   port: 8081
+cache:
+  parking-slot:
+    prefix: parking-slot
+  booking-slot:
+    prefix: booking-slot
+

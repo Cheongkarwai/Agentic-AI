@@ -1,6 +1,5 @@
 package com.cheong.agenticai.agent;
 
-import com.cheong.agenticai.dto.PaymentResult;
 import dev.langchain4j.agentic.Agent;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;

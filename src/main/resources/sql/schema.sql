@@ -30,5 +30,8 @@ CREATE TABLE IF NOT EXISTS booking_slots (
     FOREIGN KEY (transaction_id) REFERENCES transactions(id)
 );
 
+CREATE INDEX idx_parking_slot_no ON parking_slots(slot_no);
+
+CREATE INDEX idx_booking_slot_no ON booking_slots(parking_slot_id, start_time, end_time, status);
 
 

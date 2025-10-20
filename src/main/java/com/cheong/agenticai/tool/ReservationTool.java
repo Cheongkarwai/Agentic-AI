@@ -4,11 +4,16 @@ import com.cheong.agenticai.model.BookingSlot;
 import com.cheong.agenticai.model.ParkingSlot;
 import com.cheong.agenticai.repository.BookingSlotRepository;
 import com.cheong.agenticai.repository.ParkingSlotRepository;
+import com.cheong.agenticai.service.BookingService;
+import com.cheong.agenticai.service.BookingSlotCacheService;
+import com.cheong.agenticai.service.BookingSlotService;
+import com.cheong.agenticai.service.ParkingSlotService;
 import dev.langchain4j.agent.tool.P;
 import dev.langchain4j.agent.tool.Tool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -18,16 +23,16 @@ public class ReservationTool {
 
     private final AvailabilityTool availabilityTool;
 
-    private final ParkingSlotRepository parkingSlotRepository;
+    private final ParkingSlotService parkingSlotService;
 
-    private final BookingSlotRepository bookingSlotRepository;
+    private final BookingSlotService bookingSlotService;
 
     public ReservationTool(AvailabilityTool availabilityTool,
-                           ParkingSlotRepository parkingSlotRepository,
-                           BookingSlotRepository bookingSlotRepository){
+                           ParkingSlotService parkingSlotService,
+                           BookingSlotService bookingSlotService){
         this.availabilityTool = availabilityTool;
-        this.parkingSlotRepository = parkingSlotRepository;
-        this.bookingSlotRepository = bookingSlotRepository;
+        this.parkingSlotService = parkingSlotService;
+        this.bookingSlotService = bookingSlotService;
     }
 
     @Tool("""
@@ -53,7 +58,7 @@ public class ReservationTool {
             LocalDateTime startDateTimeLocal = LocalDateTime.parse(startDateTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             LocalDateTime endDateTimeLocal = LocalDateTime.parse(endDateTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-            ParkingSlot parkingSlot = parkingSlotRepository.findBySlotNoEquals(slotNo)
+            ParkingSlot parkingSlot = parkingSlotService.getParkingSlot(slotNo)
                     .block();
 
             if (parkingSlot == null) {
@@ -67,9 +72,10 @@ public class ReservationTool {
             bookingSlot.setStatus(BookingSlot.Status.PENDING);
             bookingSlot.setUserId(userId);
 
-            BookingSlot saved = bookingSlotRepository.save(bookingSlot).block();
+            BookingSlot savedBookingSlot = bookingSlotService.save(bookingSlot)
+                    .block();
 
-            String result = "BOOKING_ID:" + saved.getId();
+            String result = "BOOKING_ID:" + savedBookingSlot.getId() ;
             log.info("Slot reserved successfully: {}", result);
             return result;
 
