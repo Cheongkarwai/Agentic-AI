@@ -35,10 +35,6 @@ public class RedisParkingSlotCacheService implements ParkingSlotCacheService{
                 });
     }
 
-    @Override
-    public Mono<Boolean> saveAll(Iterable<BookingSlot> slots, Duration expiry) {
-        return null;
-    }
 
     @Override
     public Flux<ParkingSlot> findAll() {
@@ -61,7 +57,15 @@ public class RedisParkingSlotCacheService implements ParkingSlotCacheService{
     @Override
     public Mono<Boolean> delete(String key) {
         return redisTemplate.opsForValue()
-                .delete(String.format("%s:%s", cachePrefix, key));
+                .delete(String.format("%s:%s", cachePrefix, key))
+                .flatMap(isSuccess-> {
+                    if(!isSuccess){
+                        return Mono.error(new RuntimeException("Failed to delete parking slot from cache"));
+                    }
+                    return redisTemplate.opsForSet()
+                            .remove(cachePrefix, key)
+                            .thenReturn(true);
+                });
     }
 
     @Override

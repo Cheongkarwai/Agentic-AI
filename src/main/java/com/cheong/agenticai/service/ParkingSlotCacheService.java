@@ -11,8 +11,6 @@ public interface ParkingSlotCacheService {
 
     Mono<Boolean> save(String key, ParkingSlot slot, Duration expiry);
 
-    Mono<Boolean> saveAll(Iterable<BookingSlot> slots, Duration expiry);
-
     Flux<ParkingSlot> findAll();
 
     Mono<Long> saveIntoSet(ParkingSlot ... parkingSlots);
